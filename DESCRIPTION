@@ -1,0 +1,20 @@
+Package: ClusteringPlayground
+Type: Package
+Title: What the package does (short line)
+Version: 1.0
+Date: 2021-10-15
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+Imports:
+  DatabaseConnector
+Depends:
+  dplyr,
+  FeatureExtraction,
+  rlang,
+  slam,
+  ParallelLogger,
+  umap,
+  ggplot2
+License: What license is it under?
+RoxygenNote: 7.1.2
