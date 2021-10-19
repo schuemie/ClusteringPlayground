@@ -15,32 +15,41 @@
 # limitations under the License.
 
 # library(dplyr)
-# labels <- readRDS(file.path(outputFolder, "labels,rds"))
+# labels <- readRDS(file.path(outputFolder, "labels.rds"))
+# labels <- readRDS(file.path(outputFolder, "clusters1K.rds"))
 plot2D <- function(outputFolder, labels) {
   distances <- readRDS(file.path(outputFolder, "distances.rds"))
+  idxToRowId <- readRDS(file.path(outputFolder, "idxToRowId.rds"))
   
   ParallelLogger::logInfo("Computing 2D coordinates")
-  map <- umap::umap(distances, input = "dist")
+  umapSettings <- umap::umap.defaults
+  umapSettings$metric <- "cosine"
+  map <- umap::umap(distances, input = "dist", config = umapSettings)
   
   points <- data.frame(x = map$layout[, 1],
-                       y = map$layout[, 2])
-  
+                       y = map$layout[, 2],
+                       rowId = idxToRowId$rowId) 
+    
   # Add labels
-  idxToRowId <- readRDS(file.path(outputFolder, "idxToRowId.rds"))
-  labels <- labels %>%
-    inner_join(idxToRowId, by = "rowId") %>%
-    arrange(.data$idx)
+  points <- points %>%
+    inner_join(labels, by = "rowId")
   
-  points$label <- "Other"
-  points$label[labels$idx] <- labels$label
-  
+  # Find centroids
+  centroids <- points %>%
+    group_by(.data$label) %>%
+    summarise(x = mean(.data$x),
+              y = mean(.data$y)) %>%
+    filter(.data$label != "Cluster 0")
+
   ParallelLogger::logInfo("Plotting")
-  plot <- ggplot2::ggplot(points, ggplot2::aes(x = .data$x, y = .data$y, color = .data$label)) +
-    ggplot2::geom_point(shape = 16, alpha = 0.4) +
+  plot <- ggplot2::ggplot(points, ggplot2::aes(x = .data$x, y = .data$y)) +
+    ggplot2::geom_point(ggplot2::aes(color = .data$label), shape = 16, alpha = 0.4) +
+    ggplot2::geom_label(ggplot2::aes(label = .data$label), data = centroids) + 
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    axis.text = ggplot2::element_blank(),
                    axis.ticks = ggplot2::element_blank(),
                    axis.title = ggplot2::element_blank(),
+                   legend.position = "none",
                    legend.background = ggplot2::element_blank(),
                    legend.key = ggplot2::element_blank(),
                    legend.title = ggplot2::element_blank())
@@ -49,7 +58,7 @@ plot2D <- function(outputFolder, labels) {
 }
 
 labelByCovariate <- function(outputFolder,
-                              conceptIds = c(201254, 201826)) {
+                             conceptIds = c(201254, 201826)) {
   covariateData <- FeatureExtraction::loadCovariateData(file.path(outputFolder, "CovariateData.zip"))
   
   conceptPriority <- data.frame(priority = 1:length(conceptIds),
@@ -66,5 +75,16 @@ labelByCovariate <- function(outputFolder,
   labels$label <- gsub(".*index: ", "", labels$label)
   labels <- labels %>%
     select(-.data$priority)
-  saveRDS(labels, file.path(outputFolder, "labels,rds"))
+  
+  rowIds <- covariateData$covariates %>%
+    distinct(.data$rowId) %>%
+    pull()
+  
+  rowIds <- rowIds[!rowIds %in% labels$rowId]
+  if (length(rowIds) > 0) {
+    labels <- bind_rows(labels,
+                        tibble(rowId = rowIds,
+                               label = "Other"))
+  }
+  saveRDS(labels, file.path(outputFolder, "labels.rds"))
 }

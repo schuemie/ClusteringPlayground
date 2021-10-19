@@ -34,5 +34,12 @@ labelByCovariate(outputFolder = outputFolder,
                  conceptIds = c(201254, 201826)) 
 
 plot2D(outputFolder = outputFolder,
-       labels = readRDS(file.path(outputFolder, "labels,rds")))
+       labels = readRDS(file.path(outputFolder, "labels.rds")))
+
+clusterPatients(outputFolder = outputFolder)
+
+plot2D(outputFolder = outputFolder,
+       labels = readRDS(file.path(outputFolder, "clusters1K.rds")))
+
+
 
