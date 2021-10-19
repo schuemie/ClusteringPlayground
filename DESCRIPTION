@@ -15,6 +15,7 @@ Depends:
   slam,
   ParallelLogger,
   umap,
-  ggplot2
+  ggplot2,
+  RColorBrewer
 License: What license is it under?
 RoxygenNote: 7.1.2

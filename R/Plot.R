@@ -40,11 +40,15 @@ plot2D <- function(outputFolder, labels) {
     summarise(x = mean(.data$x),
               y = mean(.data$y)) %>%
     filter(.data$label != "Cluster 0")
+  
+  nClusters <- length(unique(labels$label))
+  colors <- c("#666666", RColorBrewer::brewer.pal(nClusters -1, name = "Paired"))
 
   ParallelLogger::logInfo("Plotting")
   plot <- ggplot2::ggplot(points, ggplot2::aes(x = .data$x, y = .data$y)) +
     ggplot2::geom_point(ggplot2::aes(color = .data$label), shape = 16, alpha = 0.4) +
     ggplot2::geom_label(ggplot2::aes(label = .data$label), data = centroids) + 
+    ggplot2::scale_color_manual(values = colors) +
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    axis.text = ggplot2::element_blank(),
                    axis.ticks = ggplot2::element_blank(),
@@ -54,7 +58,7 @@ plot2D <- function(outputFolder, labels) {
                    legend.key = ggplot2::element_blank(),
                    legend.title = ggplot2::element_blank())
   
-  ggplot2::ggsave(filename = file.path(outputFolder, "plot.png"))
+  ggplot2::ggsave(filename = file.path(outputFolder, "plot.png"), width = 7.5, height = 7.5, dpi = 150)
 }
 
 labelByCovariate <- function(outputFolder,
