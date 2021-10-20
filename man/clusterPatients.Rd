@@ -4,7 +4,7 @@
 \alias{clusterPatients}
 \title{Title}
 \usage{
-clusterPatients(outputFolder, algorithm = "dbscan")
+clusterPatients(outputFolder, algorithm = "umap-dbscan")
 }
 \arguments{
 \item{outputFolder}{}

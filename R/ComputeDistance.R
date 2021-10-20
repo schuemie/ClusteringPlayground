@@ -15,6 +15,15 @@
 # limitations under the License.
 
 # library(dplyr)
+
+#' Title
+#'
+#' @param outputFolder 
+#' @param minFeaturesPerPerson 
+#' @param minPersonsPerFeature 
+#'
+#' @return
+#' @export
 computeDistance <- function(outputFolder,
                             minFeaturesPerPerson = 100,
                             minPersonsPerFeature = 10) {

@@ -16,6 +16,15 @@
 
 # library(dplyr)
 # labels <- readRDS(file.path(outputFolder, "labels,rds"))
+
+
+#' Title
+#'
+#' @param outputFolder 
+#' @param labels 
+#'
+#' @return
+#' @export
 characterizeClusters <- function(outputFolder, labels) {
   covariateData <- FeatureExtraction::loadCovariateData(file.path(outputFolder, "CovariateData.zip"))
   totalPersonCount <- as.numeric(nrow(labels))
@@ -28,7 +37,7 @@ characterizeClusters <- function(outputFolder, labels) {
     select(.data$covariateId, .data$idf) %>%
     collect()
   
-  # subset <- split(labels, labels$label)[[1]]
+  # subset <- split(labels, labels$label)[[2]]
   characterize <- function(subset) {
     ParallelLogger::logInfo(sprintf("Characterizing cluster '%s'", subset$label[1]))
     subsetCd <- FeatureExtraction::filterByRowId(covariateData, subset$rowId)

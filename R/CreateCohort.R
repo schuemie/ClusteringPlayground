@@ -32,6 +32,27 @@ createCohort <- function(connectionDetails,
                                            min_obs_days_after = 365)
   connection <- DatabaseConnector::connect(connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
+  
+  DatabaseConnector::executeSql(connection, sql)
+}
 
+#' @export
+createRandomVisitCohort <- function(connectionDetails,
+                                    cdmDatabaseSchema,
+                                    cohortDatabaseSchema,
+                                    cohortTable,
+                                    sampleSize = 100000) {
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "CreateRandomVisitCohort.sql",
+                                           packageName = "ClusteringPlayground",
+                                           dbms = connectionDetails$dbms,
+                                           cohort_database_schema = cohortDatabaseSchema,
+                                           cohort_table = cohortTable,
+                                           cdm_database_schema = cdmDatabaseSchema,
+                                           sample_size = format(sampleSize, scientific = FALSE),
+                                           min_obs_days_prior = 365,
+                                           min_obs_days_after = 365)
+  connection <- DatabaseConnector::connect(connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+  
   DatabaseConnector::executeSql(connection, sql)
 }

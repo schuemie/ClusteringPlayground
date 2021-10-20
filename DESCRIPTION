@@ -16,6 +16,8 @@ Depends:
   ParallelLogger,
   umap,
   ggplot2,
-  RColorBrewer
+  RColorBrewer,
+  dbscan,
+  igraph
 License: What license is it under?
 RoxygenNote: 7.1.2

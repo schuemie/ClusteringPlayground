@@ -12,15 +12,15 @@ cdmDatabaseSchema <- "cdm_truven_mdcd_v1734"
 
 # The name of the database schema and table where the study-specific cohorts will be instantiated:
 cohortDatabaseSchema <- "scratch_mschuemi"
-cohortTable <- "cohort_for_clustering"
+cohortTable <- "cohort_for_clustering_2"
 
-outputFolder <- "d:/temp/Clustering"
+outputFolder <- "d:/temp/Clustering2"
 
-createCohort(connectionDetails = connectionDetails,
-             cdmDatabaseSchema = cdmDatabaseSchema,
-             cohortDatabaseSchema = cohortDatabaseSchema,
-             cohortTable = cohortTable,
-             sampleSize = 10000)
+createRandomVisitCohort(connectionDetails = connectionDetails,
+                        cdmDatabaseSchema = cdmDatabaseSchema,
+                        cohortDatabaseSchema = cohortDatabaseSchema,
+                        cohortTable = cohortTable,
+                        sampleSize = 10000)
 
 constructFeatures(connectionDetails = connectionDetails,
                   cdmDatabaseSchema = cdmDatabaseSchema,
@@ -41,7 +41,8 @@ plot2D(outputFolder = outputFolder,
 clusterPatients(outputFolder = outputFolder)
 
 plot2D(outputFolder = outputFolder,
-       labels = readRDS(file.path(outputFolder, "clusters1K.rds")))
+       labels = readRDS(file.path(outputFolder, "clusters.rds")))
 
-
+characterizeClusters(outputFolder = outputFolder,
+                     labels = readRDS(file.path(outputFolder, "clusters.rds")))
 
