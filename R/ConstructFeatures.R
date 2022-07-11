@@ -48,3 +48,34 @@ constructFeatures <- function(connectionDetails,
   
   
 }
+
+#' @export
+constructFeaturesMetabolicDisease <- function(connectionDetails,
+                                              cdmDatabaseSchema,
+                                              cohortDatabaseSchema,
+                                              cohortTable,
+                                              outputFolder,
+                                              oracleTempSchema = NULL) {
+  if (!file.exists(outputFolder)) {
+    warning("Folder '", outputFolder, "' not found. Attempting to create")
+    dir.create(outputFolder)
+  }
+  
+  # Create features for year before up to  year after cohort entry
+  covariateSettings <- FeatureExtraction::createCovariateSettings(useConditionGroupEraLongTerm = TRUE,
+                                                                  longTermStartDays = -365,
+                                                                  endDays = 365,
+                                                                  includedCovariateConceptIds = 436670, # Metabolic disease
+                                                                  addDescendantsToInclude = TRUE)
+  covariateData <- FeatureExtraction::getDbCovariateData(connectionDetails = connectionDetails,
+                                                         oracleTempSchema = oracleTempSchema,
+                                                         cohortDatabaseSchema = cohortDatabaseSchema,
+                                                         cohortTable = cohortTable,
+                                                         cohortId = 1,
+                                                         cdmDatabaseSchema = cdmDatabaseSchema,
+                                                         rowIdField = "row_id",
+                                                         covariateSettings = covariateSettings)
+  FeatureExtraction::saveCovariateData(covariateData, file.path(outputFolder, "CovariateData.zip"))
+  
+  
+}

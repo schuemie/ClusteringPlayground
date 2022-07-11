@@ -74,6 +74,7 @@ computeDistance <- function(outputFolder,
   
   ParallelLogger::logInfo("Compute distance matrix")
   distances <- 1 - slam::crossprod_simple_triplet_matrix(vectors)/(sqrt(slam::col_sums(vectors^2) %*% t(slam::col_sums(vectors^2))))
+  distances[is.nan(distances)] <- 1
   
   saveRDS(distances, file.path(outputFolder, "distances.rds"))
   
